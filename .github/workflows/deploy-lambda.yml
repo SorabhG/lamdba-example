@@ -1,0 +1,39 @@
+name: Deploy AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Locate JAR file
+        id: locate
+        run: |
+          JAR_FILE=$(find target -type f -name "*.jar" | head -n 1)
+          echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
+
+      - name: Deploy to AWS Lambda
+        uses: appleboy/lambda-action@v1.0.0
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+          function_name: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+          zip_file: ${{ steps.locate.outputs.jar }}

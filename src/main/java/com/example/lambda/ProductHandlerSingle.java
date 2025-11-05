@@ -19,6 +19,7 @@ public class ProductHandlerSingle {
     @Bean
     public Function<Map<String, Object>, Object> handleProduct() {
         return input -> {
+            System.out.println("Full event from API Gateway: " + input);
             // Try top-level httpMethod first
             String method = (String) input.get("httpMethod");
 
