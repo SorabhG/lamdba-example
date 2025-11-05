@@ -3,7 +3,7 @@ name: Deploy AWS Lambda
 on:
   push:
     branches:
-      - main
+      - master
       - feature/*
   workflow_dispatch:   # allows manual runs
 
