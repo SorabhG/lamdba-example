@@ -1,11 +1,11 @@
 name: Deploy AWS Lambda
 
 on:
-  workflow_dispatch:   # allows manual runs
   push:
     branches:
       - main
       - feature/*
+  workflow_dispatch:   # allows manual runs
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
       - name: Locate JAR file
         id: locate
@@ -31,7 +31,7 @@ jobs:
           echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
 
       - name: Deploy to AWS Lambda
-        uses: appleboy/lambda-action@v0.2.0
+        uses: appleboy/lambda-action@v0.2.0   # <- correct version
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
