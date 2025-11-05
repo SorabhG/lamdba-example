@@ -31,7 +31,7 @@ jobs:
           echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
 
       - name: Deploy to AWS Lambda
-        uses: appleboy/lambda-action@v1.0.0
+        uses: appleboy/lambda-action@v0.2.0
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
