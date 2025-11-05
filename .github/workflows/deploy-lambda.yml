@@ -1,37 +1,61 @@
-name: Deploy AWS Lambda
+name: Build, Scan, and Deploy AWS Lambda
 
 on:
   push:
     branches:
       - master
       - feature/*
+  pull_request:
+    branches:
+      - master
+      - feature/*
   workflow_dispatch:   # allows manual runs
 
 jobs:
-  deploy:
+  analyze-and-deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      actions: read
+      contents: read
+      security-events: write  # Required for CodeQL to upload results
+
     steps:
+      # Step 1 — Checkout code
       - name: Checkout source
         uses: actions/checkout@v4
 
+      # Step 2 — Set up Java
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # Step 3 — Initialize CodeQL for security scanning
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      # Step 4 — Build project (CodeQL needs compiled classes for full analysis)
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      # Step 5 — Perform CodeQL analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      # Step 6 — Locate JAR file for deployment
       - name: Locate JAR file
         id: locate
         run: |
           JAR_FILE=$(find target -type f -name "*.jar" | head -n 1)
           echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
 
+      # Step 7 — Deploy to AWS Lambda
       - name: Deploy to AWS Lambda
-        uses: appleboy/lambda-action@v0.2.0   # <- correct version
+        uses: appleboy/lambda-action@v0.2.0
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
