@@ -65,7 +65,9 @@ public class ProductHandlerSingle {
         }
     }
 
-
+    public void clearProducts() {
+        productRepo.clear(); // wherever your static map is
+    }
 
     public static class Product {
         private Long id;
