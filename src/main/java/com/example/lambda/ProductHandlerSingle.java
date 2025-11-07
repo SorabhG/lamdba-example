@@ -19,7 +19,7 @@ public class ProductHandlerSingle {
     @Bean
     public Function<Map<String, Object>, Object> handleProduct() {
         return input -> {
-            System.out.println("Automatic deployment: " + input);
+            System.out.println("Vikas bahi Rock in AI. " + input);
             // Try top-level httpMethod first
             String method = (String) input.get("httpMethod");
 
